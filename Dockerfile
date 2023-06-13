@@ -3,15 +3,23 @@ FROM python:3-slim AS builder
 ADD . /app
 WORKDIR /app
 
+
+
 RUN pip install --target=/app -r requirements.txt
+FROM chromedp/headless-shell:latest
+RUN apt-get update \
+&& apt-get install --no-install-recommends -qq ca-certificates bash sed git dumb-init \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 FROM python:3-slim
-ENV MARK="9.6.0"
+ENV MARK="9.2.1"
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y tar curl sudo && \
   rm -rf /var/lib/apt/lists/*
-RUN curl -LO https://go.dev/dl/go1.20.5.linux-amd64.tar.gz &&  rm -rf /usr/local/go && tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz &&\
-    export PATH=$PATH:/usr/local/go/bin && go version &&\
-    go install github.com/kovetskiy/mark@${MARK} && ls /usr/local/go/bin 
+RUN curl -LO https://github.com/kovetskiy/mark/releases/download/${MARK}/mark_${MARK}_Linux_x86_64.tar.gz && \
+  tar -xvzf mark_${MARK}_Linux_x86_64.tar.gz && \
+  chmod +x mark && \
+  sudo mv mark /usr/local/bin/mark
 
 COPY --from=builder /app /app
 WORKDIR /app
