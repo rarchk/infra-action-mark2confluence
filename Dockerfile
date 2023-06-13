@@ -9,8 +9,8 @@ RUN pip install --target=/app -r requirements.txt
 FROM chromedp/headless-shell:latest
 ENV MARK="9.2.1"
 RUN apt-get update \
-&& apt-get install --no-install-recommends -qq ca-certificates bash software-properties-common \
-&& add-apt-repository ppa:deadsnakes/ppa && apt-get install python3.9 \
+&& apt-get install --no-install-recommends -qq ca-certificates bash curl software-properties-common \
+&& add-apt-repository ppa:deadsnakes/ppa && apt-get install python3.11 python3-pip \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
