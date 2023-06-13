@@ -37,6 +37,10 @@ inputs:
     description: "Defines the mermaid provider to use. Supported options are: cloudscript, mermaid-go"
     required: false
     default: ""
+  IMAGE_RENDER_SIZE:
+    description: "Defines image size to render"
+    required: false
+    default: "900"
 runs:
   using: "docker"
   image: Dockerfile

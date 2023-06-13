@@ -34,11 +34,12 @@ DEFAULT_INPUTS = {
   "CONFLUENCE_USERNAME": "",
   "CONFLUENCE_BASE_URL": "",
   "MERMAID_PROVIDER": "",
+  "IMAGE_RENDER_SIZE": "900"
 }
 
 DEFAULT_GITHUB = {
   "SERVER_URL": "https://github.com",
-  "REPOSITORY": "draios/infra-action-mark2confluence",
+  "REPOSITORY": "rarchk/infra-action-mark2confluence",
   "REF_NAME": "main",
   "WORKSPACE": ".",
 }
@@ -181,6 +182,23 @@ def check_header_template(header_template: str):
     logger.error(f"Setup error, HEADER_TEMPLATE: {e}")
     exit(1)
 
+def update_image_link(path: str, size: str)->int:
+    """Converts a markdown image to html image."""
+    with open(path, 'r') as fd:
+      content = fd.read()
+    regex = r"(?:[!]\[(?P<caption>.*?)\])\((?P<image>.*?)\)"
+    matches = re.finditer(regex, content, re.MULTILINE)
+    result = content
+    for _, match in enumerate(matches, start=1):
+      #print (f"Found Match {match.group()}")
+      caption_name, image_name = match.groups()
+      html_image_link = f'<img src="{image_name}" alt="{caption_name}" width="{size}"/>'
+      result = re.sub(regex, html_image_link, result, 1)
+
+    with open(path, 'w') as fd:
+      fd.write(result)
+    return 0
+
 
 def main()->int:
   global cfg
@@ -208,6 +226,7 @@ def main()->int:
       header = tpl.render(source_link=source_link)
 
       inject_header_before_first_line_of_content(path, header)
+      update_image_link(path, cfg.inputs.IMAGE_RENDER_SIZE)
 
       status[path] = publish(path)
     else:

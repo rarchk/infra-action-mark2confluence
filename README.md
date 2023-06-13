@@ -24,6 +24,8 @@ MODIFIED_INTERVAL: "0" # Last modified files in minutes
 CONFLUENCE_USERNAME: ${{ secrets.CONFLUENCE_USERNAME }} # CONFLUENCE_USERNAME (Confluence username) must be set in GitHub Repo secrets
 CONFLUENCE_PASSWORD: ${{ secrets.CONFLUENCE_PASSWORD }} # CONFLUENCE_PASSWORD (Confluence api key) must be set in GitHub Repo secrets
 HEADER_TEMPLATE: "---\n\n**WARNING**: This page is automatically generated from [this source code]({{source_link}})\n\n---\n" # This is a jinja template used as header, source_link is automatically resolved as github source url of the current file
+MERMAID_PROVIDER: "mermaid-go"
+IMAGE_RENDER_SIZE: "900"
 ```
 
 ## Optional environment variables
