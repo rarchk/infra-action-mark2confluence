@@ -11,7 +11,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
   rm -rf /var/lib/apt/lists/*
 RUN curl -LO https://go.dev/dl/go1.20.5.linux-amd64.tar.gz &&  rm -rf /usr/local/go && tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz &&\
     export PATH=$PATH:/usr/local/go/bin && go version &&\
-    go install github.com/kovetskiy/mark@${MARK} && whereis mark && mark --version
+    go install github.com/kovetskiy/mark@${MARK} && ls /usr/local/go/bin 
 
 COPY --from=builder /app /app
 WORKDIR /app
