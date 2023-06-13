@@ -10,7 +10,8 @@ FROM chromedp/headless-shell:latest
 RUN apt-get update \
 && apt-get install --no-install-recommends -qq ca-certificates bash sed git dumb-init \
 && apt-get clean \
-&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+&& whereis google-chrome
 
 FROM python:3-slim
 ENV MARK="9.2.1"
