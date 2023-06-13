@@ -5,14 +5,15 @@ WORKDIR /app
 RUN pip install --target=/app -r requirements.txt
 
 
-FROM python:3-slim
+
+FROM chromedp/headless-shell:latest
 ENV MARK="9.2.1"
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y tar curl sudo && \
-  rm -rf /var/lib/apt/lists/*
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-&& echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
-&& apt-get update && apt-get -y install google-chrome-stable \
-&& whereis chrome && chrome &
+RUN apt-get update \
+&& apt-get install --no-install-recommends -qq ca-certificates bash software-properties-common \
+&& add-apt-repository ppa:deadsnakes/ppa && apt-get install python3.9 \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 RUN curl -LO https://github.com/kovetskiy/mark/releases/download/${MARK}/mark_${MARK}_Linux_x86_64.tar.gz && \
   tar -xvzf mark_${MARK}_Linux_x86_64.tar.gz && \
   chmod +x mark && \
