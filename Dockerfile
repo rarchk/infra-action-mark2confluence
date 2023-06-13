@@ -9,10 +9,9 @@ FROM python:3-slim
 ENV MARK="9.6.0"
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y tar curl sudo && \
   rm -rf /var/lib/apt/lists/*
-RUN curl -LO https://github.com/kovetskiy/mark/releases/download/${MARK}/mark_${MARK}_Linux_x86_64.tar.gz && \
-  tar -xvzf mark_${MARK}_Linux_x86_64.tar.gz && \
-  chmod +x mark && \
-  sudo mv mark /usr/local/bin/mark
+RUN curl -LO https://go.dev/dl/go1.20.5.linux-amd64.tar.gz &&  rm -rf /usr/local/go && tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz &&\
+    export PATH=$PATH:/usr/local/go/bin && go version &&\
+    go install github.com/kovetskiy/mark@${MARK} && whereis mark && mark --version
 
 COPY --from=builder /app /app
 WORKDIR /app
