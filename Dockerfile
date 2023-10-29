@@ -13,9 +13,8 @@ RUN apt-get update \
 && add-apt-repository ppa:deadsnakes/ppa && apt-get install python3.9 python3-pip -y \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN curl -LO https://github.com/kovetskiy/mark/releases/download/${MARK}/mark_${MARK}_Linux_x86_64.tar.gz && \
-  tar -xvzf mark_${MARK}_Linux_x86_64.tar.gz && \
+RUN curl -LO https://github.com/kovetskiy/mark/releases/download/${MARK}/mark_Linux_x86_64.tar.gz && \
+  tar -xvzf mark_Linux_x86_64.tar.gz && \
   chmod +x mark && \
   sudo mv mark /usr/local/bin/mark
 
