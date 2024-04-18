@@ -7,10 +7,10 @@ RUN pip install --target=/app -r requirements.txt
 
 
 FROM chromedp/headless-shell:latest
-ENV MARK="9.10.1"
+ENV MARK="9.12.0"
 RUN apt-get update \
 && apt-get install --no-install-recommends -qq ca-certificates bash curl software-properties-common sudo gnupg -y \
-&& add-apt-repository ppa:deadsnakes/ppa && apt-get install python3.9 python3-pip -y \
+&& apt-get install python3-launchpadlib -y \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN curl -LO https://github.com/kovetskiy/mark/releases/download/${MARK}/mark_Linux_x86_64.tar.gz && \
