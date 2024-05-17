@@ -28,12 +28,12 @@ DEFAULT_INPUTS = {
   "FILES": "",
   "ACTION": ACTION_DRY_RUN,
   "LOGURU_LEVEL": "INFO",
-  "HEADER_TEMPLATE": "---\n\n**WARNING**: This page is automatically generated from [this source code]({{ source_link }})\n\n---\n<!-- Include: ac:toc -->",
+  "HEADER_TEMPLATE": "---\n\n**WARNING**: This page is automatically generated from [this source code]({{ source_link }})\n\n---\n<!-- Include: ac:toc -->\n<!-- Macro: \!\[.*\]\((.+)\)\<\!\-\- width=(.*) \-\-\>\nTemplate: ac:image\nAttachment: ${1}\nWidth: ${2} -->\n\n",
   "MODIFIED_INTERVAL": "0",
   "CONFLUENCE_PASSWORD": "",
   "CONFLUENCE_USERNAME": "",
   "CONFLUENCE_BASE_URL": "",
-  "MERMAID_PROVIDER": "",
+  "MERMAID_PROVIDER": "mermaid-go",
   "IMAGE_RENDER_SIZE": "900"
 }
 
@@ -71,7 +71,6 @@ def load_vars():
 
 def publish(path: str)-> tuple:
   global cfg
-
   other_args = ""
   if cfg.inputs.ACTION == ACTION_DRY_RUN:
     other_args = "--dry-run"
@@ -82,9 +81,9 @@ def publish(path: str)-> tuple:
   if cfg.inputs.MERMAID_PROVIDER:
     mermaid_provider = f"--mermaid-provider {cfg.inputs.MERMAID_PROVIDER}"
 
-  cmd_line = f'mark -p "{cfg.inputs.CONFLUENCE_PASSWORD}" -u "{cfg.inputs.CONFLUENCE_USERNAME}" -b "{cfg.inputs.CONFLUENCE_BASE_URL}" {mermaid_provider} {other_args} --color never --debug -f {path}'
+  cmd_line = f'mark -p "{cfg.inputs.CONFLUENCE_PASSWORD}" -u "{cfg.inputs.CONFLUENCE_USERNAME}" -b "{cfg.inputs.CONFLUENCE_BASE_URL}" {mermaid_provider} {other_args} --color never --debug --trace -f {path}'
   args = shlex.split(cmd_line)
-  proc = subprocess.Popen(args, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd = os.path.dirname(path))
+  proc = subprocess.Popen(args, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
 
   try:
     _, errs = proc.communicate(timeout=120)
@@ -187,14 +186,11 @@ def update_image_link(path: str, size: str)->int:
     with open(path, 'r') as fd:
       content = fd.read()
     regex = r"(?:[!]\[(?P<caption>.*?)\])\((?P<image>.*?)\)"
-    matches = re.finditer(regex, content, re.MULTILINE)
+    replacement = r"![\1](\2)<!-- width=size -->"
+    replacement=replacement.replace("size", str(size))
     result = content
-    for _, match in enumerate(matches, start=1):
-      #print (f"Found Match {match.group()}")
-      caption_name, image_name = match.groups()
-      html_image_link = f'<img src="{image_name}" alt="{caption_name}" width="{size}"/>'
-      result = re.sub(regex, html_image_link, result, 1)
-
+    result = re.sub(regex, replacement, result)
+    
     with open(path, 'w') as fd:
       fd.write(result)
     return 0
@@ -224,10 +220,9 @@ def main()->int:
       logger.info(f"Processing file {path}")
       source_link = f"{ cfg.github.SERVER_URL }/{ cfg.github.REPOSITORY }/blob/{ cfg.github.REF_NAME }/{ path.replace(cfg.github.WORKSPACE, '') }"
       header = tpl.render(source_link=source_link)
-
+      
       inject_header_before_first_line_of_content(path, header)
       update_image_link(path, cfg.inputs.IMAGE_RENDER_SIZE)
-
       status[path] = publish(path)
     else:
       logger.info(f"Skipping headerless or non md file {path}")
