@@ -1,22 +1,26 @@
 FROM python:3-slim AS builder
 
-ADD . /app
 WORKDIR /app
+COPY requirements.txt .
 RUN pip install --target=/app -r requirements.txt
+
+COPY . .
 
 
 
 FROM chromedp/headless-shell:latest
-ENV MARK="9.12.0"
+
+ENV MARK="v16.2.0"
+
 RUN apt-get update \
-&& apt-get install --no-install-recommends -qq ca-certificates bash curl software-properties-common sudo gnupg -y \
-&& apt-get install python3-launchpadlib -y \
+&& apt-get install --no-install-recommends -qq ca-certificates curl gnupg python3-launchpadlib -y \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN curl -LO https://github.com/kovetskiy/mark/releases/download/${MARK}/mark_Linux_x86_64.tar.gz && \
-  tar -xvzf mark_Linux_x86_64.tar.gz && \
-  chmod +x mark && \
-  sudo mv mark /usr/local/bin/mark
+
+RUN curl -LO https://github.com/kovetskiy/mark/releases/download/${MARK}/mark_Linux_x86_64.tar.gz \
+&& tar -xzf mark_Linux_x86_64.tar.gz \
+&& mv mark /usr/local/bin/mark \
+&& rm mark_Linux_x86_64.tar.gz
 
 COPY --from=builder /app /app
 WORKDIR /app
