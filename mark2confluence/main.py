@@ -102,7 +102,7 @@ def publish(path: str) -> tuple:
   if cfg.inputs.D2_SCALE:
     args.extend(["--d2-scale", cfg.inputs.D2_SCALE])
 
-  args.extend(["--color", "never", "--debug", "--trace", "-f", path])
+  args.extend(["--color", "never", "--log-level", "trace", "-f", path])
 
   try:
     result = subprocess.run(args, capture_output=True, timeout=120)
