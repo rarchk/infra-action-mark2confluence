@@ -33,12 +33,24 @@ inputs:
     description: The header to add to each markdown files, this will jinja evaluated
     required: false
     default: "---\n\n**WARNING**: This page is automatically generated from [this source code]({{source_link}})\n\n---\n<!-- Include: ac:toc -->"
-  MERMAID_PROVIDER:
-    description: "Defines the mermaid provider to use. Supported options are: cloudscript, mermaid-go"
+  FEATURES:
+    description: "Comma-separated list of mark features to enable. Supported: mermaid, d2, mention, mkdocsadmonitions. Defaults: mermaid, mention"
     required: false
     default: ""
+  MERMAID_SCALE:
+    description: "Scale factor for mermaid diagram rendering (default: 1)"
+    required: false
+    default: ""
+  D2_SCALE:
+    description: "Scale factor for d2 diagram rendering (default: 1)"
+    required: false
+    default: ""
+  SOURCE_BRANCH:
+    description: "Branch name used in the source code link header (default: main). Use this instead of the git ref which may point to a deleted tag or branch."
+    required: false
+    default: "main"
   IMAGE_RENDER_SIZE:
-    description: "Defines image size to render"
+    description: "Defines image width in pixels for the Confluence ac:image macro"
     required: false
     default: "900"
 runs:
